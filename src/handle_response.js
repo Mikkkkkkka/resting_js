@@ -4,6 +4,10 @@ export function HandleResponse(request) {
     return data => innerHandleResponse(request, data);
 }
 
+export function HandleDynamicResponse(request) {
+    throw Error("Not implemented!");
+}
+
 function innerHandleResponse(request, data) {
 
     const xml = String.fromCharCode(...data.value);
