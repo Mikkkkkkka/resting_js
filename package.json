@@ -1,0 +1,17 @@
+{
+  "name": "call-center-bank",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".src/main.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Ошибка: тест не указан\" && выход 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+
+  "dependencies": {
+    "fast-xml-parser": "^4.4.0"
+  }
+}
