@@ -38,8 +38,15 @@ else {
             .read())
         .then(data => CollectCurrencyInfo(request, data));
 
-    console.log(currency_info);
-    // console.log(`${currency_info.name} ${currency_info.nominal} ${currency_info.date} ${currency_info.value}`);
+    if (currency_info.name === undefined ||
+        currency_info.nominal === undefined ||
+        currency_info.date === undefined ||
+        currency_info.value === undefined) {
+        console.log("Request failed :(");
+        console.log(currency_info);
+    }
+    else
+        console.log(`${currency_info.name} ${currency_info.nominal} ${currency_info.date} ${currency_info.value}`);
 }
 
 

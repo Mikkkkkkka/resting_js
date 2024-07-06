@@ -10,24 +10,23 @@ export function CollectCurrencyInfo(request, data) {
 
     if (!XMLValidator.validate(xml)) {
         console.log("Received invalid XML");
-        return;
+        return undefined;
     }
 
     const parser = new XMLParser();
     const target = parser
         .parse(xml)
-        .ValCurs
-        .Valute
-        .find(currency => currency.CharCode === request.Vname);
+        ?.ValCurs
+        ?.Valute
+        ?.find(currency => currency.CharCode === request.Vname);
 
-    const currency_info = {
+    if (target === undefined)
+        return parser.parse(xml);
+
+    return {
         name: target.CharCode,
         nominal: target.Nominal,
         date: response_date,
         value: target.Value,
-    }
-
-    return currency_info;
-
-    // console.log(`${target.CharCode} ${target.Nominal} ${response_date} ${target.Value}`);
+    };
 }
