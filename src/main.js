@@ -1,4 +1,4 @@
-import { HandleResponse, HandleDynamicResponse } from './handle_response.js';
+import { CollectCurrencyInfo, } from './collect_currency_info.js';
 
 
 const argv = process.argv;
@@ -31,18 +31,22 @@ else {
         ? `date_req=${request.Date.replaceAll('.', '/')}`
         : "";
 
-    fetch(http_request)
+    const currency_info = await fetch(http_request)
         .then(response => response
             .body
             .getReader()
             .read())
-        .then(HandleResponse(request));
+        .then(data => CollectCurrencyInfo(request, data));
+
+    console.log(currency_info);
+    // console.log(`${currency_info.name} ${currency_info.nominal} ${currency_info.date} ${currency_info.value}`);
 }
 
 
 // https://www.cbr.ru/scripts/XML_daily_eng.asp?
 
 // node .\main.js --Vname=USD --Vnom=10 --Date=01.01.2024
+// USD 10 01.01.2024 896,883
+// Вывод: <код валюты> <номинал> <дата> <курс>
 
-// https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=01/01/2024&date_req2=01/05/2024$VAL_NM_RQ=R01215
-// https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=01/01/2024&date_req2=01/05/2024
+// https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=01/01/2024&date_req2=01/05/2024&VAL_NM_RQ=R01215
