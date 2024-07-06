@@ -1,7 +1,7 @@
 import { XMLValidator, XMLParser } from 'fast-xml-parser';
 
 
-export function CollectCurrencyInfo(request, data) {
+export function ParseCurrencyData(data) {
 
     const xml = String.fromCharCode(...data.value);
 
@@ -14,19 +14,8 @@ export function CollectCurrencyInfo(request, data) {
     }
 
     const parser = new XMLParser();
-    const target = parser
-        .parse(xml)
-        ?.ValCurs
-        ?.Valute
-        ?.find(currency => currency.CharCode === request.Vname);
+    let json = parser.parse(xml)
+    json.Date = response_date;
 
-    if (target === undefined)
-        return parser.parse(xml);
-
-    return {
-        name: target.CharCode,
-        nominal: target.Nominal,
-        date: response_date,
-        value: target.Value,
-    };
+    return json;
 }

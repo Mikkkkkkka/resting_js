@@ -1,4 +1,4 @@
-import { CollectCurrencyInfo, } from './collect_currency_info.js';
+import { ParseCurrencyData, } from './collect_currency_info.js';
 
 
 const argv = process.argv;
@@ -23,37 +23,41 @@ if (request.DateDate !== undefined) {
         .split('-');
 
     console.log("Not implemented yet!"); // TODO: handle dynamic
+    process.exit();
 }
-else {
-    let http_request = "https://www.cbr.ru/scripts/XML_daily_eng.asp?"
 
-    http_request += request.Date
-        ? `date_req=${request.Date.replaceAll('.', '/')}`
-        : "";
+let http_request = "https://www.cbr.ru/scripts/XML_daily_eng.asp?"
 
-    const currency_info = await fetch(http_request)
-        .then(response => response
-            .body
-            .getReader()
-            .read())
-        .then(data => CollectCurrencyInfo(request, data));
+http_request += request.Date
+    ? `date_req=${request.Date.replaceAll('.', '/')}`
+    : "";
 
-    if (currency_info.name === undefined ||
-        currency_info.nominal === undefined ||
-        currency_info.date === undefined ||
-        currency_info.value === undefined) {
-        console.log("Request failed :(");
-        console.log(currency_info);
-    }
-    else
-        console.log(`${currency_info.name} ${currency_info.nominal} ${currency_info.date} ${currency_info.value}`);
+console.log(http_request);
+
+const currencies = await fetch(http_request)
+    .then(response => response
+        .body
+        .getReader()
+        .read())
+    .then(ParseCurrencyData);
+
+if (currencies.ValCurs === 'Error in parameters') {
+    console.log(currencies.ValCurs);
+    process.exit();
 }
+
+const target = currencies
+    .ValCurs
+    .Valute
+    .find(currency => currency.CharCode === request.Vname);
+
+target.Nominal = request.Vnom ?? target.Nominal;
+target.VunitRate = Number(target
+    .VunitRate
+    .replace(',', '.'));
+
+console.log(`${target.CharCode} ${target.Nominal} ${request.Date ?? currencies.Date} ${target.Nominal * target.VunitRate}`);
 
 
 // https://www.cbr.ru/scripts/XML_daily_eng.asp?
-
-// node .\main.js --Vname=USD --Vnom=10 --Date=01.01.2024
-// USD 10 01.01.2024 896,883
-// Вывод: <код валюты> <номинал> <дата> <курс>
-
 // https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=01/01/2024&date_req2=01/05/2024&VAL_NM_RQ=R01215
